@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>预约项目</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="description" content="Write an awesome description for your new site here.
+    You can edit this line in _config.yml. It will appear in your document head meta (for Google search results)
+    and in your feed.xml site description.
+    ">
+    <link rel="stylesheet" th:href="@{/jquery-weui/lib/weui.min.css}">
+    <link rel="stylesheet" th:href="@{/jquery-weui/css/jquery-weui.css}">
+    <link rel="stylesheet" th:href="@{/jquery-weui/demos/css/demos.css}">
+    <style>
+        .swiper-container {
+            width: 100%;
+        }
+
+        .swiper-container img {
+            display: block;
+            width: 100%;
+            height: 280px;
+        }
+    </style>
+</head>
+<body ontouchstart>
+
+    <input type="hidden" id="wx_openid" th:value="${wx_openid}">
+
+    <div class="swiper-container">
+        <!-- Additional required wrapper -->
+        <div class="swiper-wrapper">
+            <!-- Slides -->
+            <div class="swiper-slide"><img th:src="@{/images/app-01.jpg}" /></div>
+            <div class="swiper-slide"><img th:src="@{/images/app-02.jpg}" /></div>
+        </div>
+        <!-- If we need pagination -->
+        <div class="swiper-pagination"></div>
+    </div>
+
+    <div class="weui-grids">
+        <a class="weui-grid js_grid" th:each="app_item,iterStat : ${app_items}"
+            th:href="'javascript:toAppRemind('+${iterStat.current.item_id}+')'">
+            <div class="weui-grid__icon">
+                <img th:src="@{${app_item.item_icon}}" alt="">
+            </div>
+            <p class="weui-grid__label">
+                [[${app_item.item_name}]]
+            </p>
+        </a>
+        <a href="javascript:toAppRemind(0)" class="weui-grid js_grid">
+            <div class="weui-grid__icon">
+                <img th:src="@{/images/app-myapp.png}" alt="">
+            </div>
+            <p class="weui-grid__label">
+                我的预约
+            </p>
+        </a>
+    </div>
+    <script th:src="@{/jquery-weui/lib/jquery-2.1.4.js}"></script>
+    <script th:src="@{/jquery-weui/lib/fastclick.js}"></script>
+    <script th:src="@{/jquery-weui/js/jquery-weui.js}"></script>
+    <script th:src="@{/jquery-weui/js/swiper.js}"></script>
+
+    <script>
+        var ctxPath = '[[@{/}]]';
+
+        $(function() {
+            FastClick.attach(document.body);
+        });
+
+        $(".swiper-container").swiper({
+            loop: true,
+            autoplay: 5000
+        });
+
+        var wx_openid = $('#wx_openid').val();
+
+        function toAppRemind(item_id){
+            if(item_id==1 || item_id==0){
+                $.alert("开发中敬请期待！", "温馨提示");
+                return;
+            }
+            window.location.href = ctxPath + 'wechat/toAppRemind.do?wx_openid='+wx_openid+'&item_id='+item_id;
+        }
+    </script>
+</body>
+</html>

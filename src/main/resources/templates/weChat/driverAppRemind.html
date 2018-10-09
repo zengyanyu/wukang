@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>驾驶员体检注意事项</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="description" content="Write an awesome description for your new site here.
+    You can edit this line in _config.yml. It will appear in your document head meta (for Google search results)
+    and in your feed.xml site description.
+    ">
+    <link rel="stylesheet" th:href="@{/jquery-weui/lib/weui.min.css}">
+    <link rel="stylesheet" th:href="@{/jquery-weui/css/jquery-weui.css}">
+    <link rel="stylesheet" th:href="@{/jquery-weui/demos/css/demos.css}">
+    <style>
+        .weui-form-preview__bd{
+            text-align: left;
+        }
+
+        .my_font_Red{
+            font-size: 14px;
+            color: red;
+        }
+
+        .my_font_black14{
+            font-size: 14px;
+            color: black;
+        }
+
+        .my_font_black16{
+            font-size: 16px;
+            color: black;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body ontouchstart>
+    <input type="hidden" id="wx_openid" th:value="${wx_openid}">
+
+    <div class="weui-msg">
+        <div class="weui-msg__icon-area"><i class="weui-icon-info weui-icon_msg"></i></div>
+        <div class="weui-msg__text-area">
+            <h2 class="weui-msg__title">驾驶员体检预约须知</h2>
+            <p class="weui-msg__desc">
+                <div class="weui-msg">
+                    <div class="weui-form-preview">
+                        <div class="weui-form-preview__bd">
+                            <font class="my_font_black16">预约前注意事项：</font><br/>
+                            <font class="my_font_black14">1、必须输入本人姓名、身份证号码</font><br/>
+                            <font class="my_font_black14">2、必须携带本人身份证</font><br/>
+                            <font class="my_font_black14">3、可预约时间：周一至周五（上午8:30-10:30、下午13:00-15:30）周六（上午8:30-10:30）</font><br/>
+                        </div>
+                    </div>
+                </div>
+            </p>
+        </div>
+        <div class="weui-msg__opr-area">
+            <p class="weui-btn-area">
+                <a href="javascript:toDriverApp();" class="weui-btn weui-btn_primary">开始预约</a>
+            </p>
+        </div>
+        <div class="weui-msg__extra-area">
+            <div class="weui-footer">
+                <p class="weui-footer__text">Copyright © 2017-2018 松江区第五康复医院</p>
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/jquery-weui/lib/jquery-2.1.4.js}"></script>
+    <script th:src="@{/jquery-weui/lib/fastclick.js}"></script>
+    <script th:src="@{/jquery-weui/js/jquery-weui.js}"></script>
+
+    <script>
+        var ctxPath = '[[@{/}]]';
+
+        var wx_openid = $('#wx_openid').val();
+
+        $(function() {
+            FastClick.attach(document.body);
+        });
+
+        function toDriverApp(){
+            window.location.href = ctxPath + 'wechat/toDriverApp.do?wx_openid='+wx_openid;
+        }
+    </script>
+</body>
+</html>

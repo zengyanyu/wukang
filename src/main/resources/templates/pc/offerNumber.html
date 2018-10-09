@@ -1,0 +1,194 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>现场取号</title>
+
+    <!--<link rel="stylesheet" th:href="@{/layuiadmin/layui/css/layui.css}" media="all">-->
+
+    <style>
+        body{
+            margin:0;
+            padding:0;
+            background-image:url([[@{/images/offerNumberBackground.jpg}]]);
+            background-position:top;
+            background-repeat:no-repeat;
+            background-size:cover;
+            overflow: hidden;
+            /*font-family:"楷体","方正北魏楷书简体","宋体","微软雅黑"*/
+        }
+        .container{
+            margin:0;
+            padding:0;
+            display:block;
+            float:left;
+            width:99.4%;
+        }
+
+        .btn{
+            margin:200px auto;
+            padding:0;
+            width:800px;
+            font-size:80px;
+            text-align:center;
+            font-weight:bold;
+            color:#262626;
+        }
+
+        .nownumber{
+            margin:60px;
+            padding:60px;
+            background-image:url([[@{/images/offerNumberBtn.jpg}]]);
+            background-size:auto;
+            background-position:top;
+        }
+        .pageimg{
+            display:block;
+            float:left;
+            margin-top:-10px;
+        }
+    </style>
+
+    <script type="text/javascript">
+        function byId(id){
+            return document.getElementById(id);
+        }
+
+        function Init(){
+            var obj=byId("CardReader1");
+
+            //console.log(obj);
+            //设置端口号，1表示串口1，2表示串口2，依此类推；1001表示USB，依此类推。
+
+            obj.setPortNum(0);
+        }
+        function setPort(){
+            var obj=byId("CardReader1");
+
+            obj.setPortNum(1001);
+        }
+
+        function readCard(){
+            $("#id_card").val("");
+            $("#name").val("");
+
+            var cardId;
+            var name;
+            var obj = byId("CardReader1");
+
+            obj.setPortNum(1001);
+            //读卡
+            var rst = obj.ReadCard();
+            //获取各项信息
+            cardId = obj.CardNo();
+            name = obj.NameL();
+            $("#id_card").val(cardId);
+            $("#name").val(name);
+        }
+    </script>
+    <script th:src="@{/LodopFuncs.js}"></script>
+
+
+</head>
+<body onload="Init()" style="width:100%;text-align:center;">
+<object id="CardReader1" codebase="FirstActivex.cab#version=1,0,3,1" classid="CLSID:F225795B-A882-4FBA-934C-805E1B2FBD1B" >
+    <param name="_Version" value="65536"/>
+    <param name="_ExtentX" value="2646"/>
+    <param name="_ExtentY" value="1323"/>
+    <param name="_StockProps" value="0"/>
+    <param name="port" value="串口1"/>
+</object>
+
+<div class="container">
+    <div class="btn">
+        <div class="nownumber">
+            <div class="pageimg"><img th:src="@{/images/offerNumberBtn02.png}" width="118" style="margin-top: 30px"/></div>
+            <a onclick="orderNumber()">驾驶员体检点击取号</a>
+        </div>
+        <input id="id_card" type="hidden" />
+        <input id="name" type="hidden" />
+    </div>
+</div>
+
+
+<style id="page1_style">
+    .main{
+        text-align: center;
+    }
+
+    .title{
+        text-align: center;
+    }
+
+    .main-list{
+        text-align: center;
+    }
+</style>
+
+    <div id='page1' style='width:300px;height:200px; display: none'>
+        <div class="main">
+            <div class="title">上海市第五康复医院体检科</div>
+            <div id="number" class="title" style="font-size:48px; font-weight:bold;"></div>
+            <div class="main-list"><span>姓名：</span><span id="offer_name"></span></div>
+            <div class="main-list"><span>身份证号：</span><span id="offer_id_card"></span></div>
+            <div class="main-list"><span>体检项目：</span><span>驾驶员体检</span></div>
+            <div class="main-list"><span>体检时间：</span><span id="offer_time"></span></div>
+            <div class="main-list">请妥善保管此小票丢失请重新领取</div>
+        </div>
+    </div>
+
+<script th:src="@{/jquery-1.9.1/jquery.js}"></script>
+<script th:src="@{/layer/layer.js}"></script>
+<script>
+    var LODOP=getLodop(document.getElementById('LODOP_OB'),document.getElementById('LODOP_EM'));
+
+    var ctxPath = '[[@{/}]]';
+
+    function handleJLPrintData(resultData){
+        $('#number').text(resultData.local_number);
+        $('#offer_name').text(resultData.name);
+        $('#offer_id_card').text(resultData.id_card);
+        $('#offer_time').text(resultData.app_time);
+    }
+
+    function orderNumber() {
+        readCard();
+        var id_card =  $("#id_card").val();
+        var name = $('#name').val();
+
+        if(id_card==""||name==""){
+            /*layer.alert('请将身份证放在读卡器上', {
+                icon: 0,
+                skin: 'layer-ext-moon'
+            })*/
+            alert('请将身份证放在读卡器上');
+            return;
+        }
+        var data = {
+            name : name,
+            id_card : id_card
+        }
+        $.post(ctxPath + 'pc/orderNumber.do',data,function (res) {
+            //console.log(res);
+            if(res.resultCode==1000||res.resultCode==1010|| res.resultCode==1040){
+                LODOP.PRINT_INIT("取号");
+                // console.log(res.resultMsg);
+                handleJLPrintData(res.resultData);
+                var strStyle="<style>"+document.getElementById("page1_style").innerHTML+"</style>";
+                var strHtml=strStyle+"<body>"+document.getElementById("page1").innerHTML+"</body>";
+                LODOP.ADD_PRINT_HTM("0%", "0%", "100%", "100%", strHtml);
+                LODOP.PRINT();
+            }else if(res.resultCode==1020||res.resultCode==1030||res.resultCode==1090){
+                // console.log(res.resultMsg);
+                /*layer.alert(res.resultMsg, {
+                    icon: 2,
+                    skin: 'layer-ext-moon'
+                })*/
+                alert(res.resultMsg);
+                return;
+            }
+        })
+    }
+</script>
+
+</body>
+</html>

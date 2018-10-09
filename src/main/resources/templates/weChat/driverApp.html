@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>驾驶员体检</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="description" content="Write an awesome description for your new site here.
+    You can edit this line in _config.yml. It will appear in your document head meta (for Google search results)
+    and in your feed.xml site description.
+    ">
+    <link rel="stylesheet" th:href="@{/jquery-weui/lib/weui.min.css}">
+    <link rel="stylesheet" th:href="@{/jquery-weui/css/jquery-weui.css}">
+    <link rel="stylesheet" th:href="@{/jquery-weui/demos/css/demos.css}">
+    <style>
+        .weui-cells{
+            margin-top: 0px;
+            font-size: 15px;
+        }
+
+        .weui-label{
+            text-align: center;
+        }
+
+        .weui-input{
+            text-align: center;
+        }
+
+        .weui-check__label{
+            text-align: center;
+        }
+    </style>
+</head>
+<body ontouchstart>
+    <input type="hidden" id="wx_openid" th:value="${wx_openid}">
+
+    <div class="weui-cells weui-cells_form">
+        <div class="weui-cell">
+            <div class="weui-cell__hd"><label class="weui-label">预约项目</label></div>
+            <div class="weui-cell__bd">
+                <input class="weui-input" type="text" th:value="驾驶员体检预约" th:readonly="true" style="font-weight:bold">
+            </div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__hd"><label class="weui-label">预约人姓名</label></div>
+            <div class="weui-cell__bd">
+                <input class="weui-input" type="text" placeholder="请输入预约人姓名" id="name">
+            </div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__hd"><label class="weui-label">身份证号码</label></div>
+            <div class="weui-cell__bd">
+                <input class="weui-input" type="text" placeholder="请输入身份证号码" id="id_card">
+            </div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__hd"><label class="weui-label">预约日期</label></div>
+            <div class="weui-cell__bd">
+                <input class="weui-input" id="app_date" type="text" onFocus="cdr.show(this)" style="font-weight:bold">
+            </div>
+        </div>
+        <div class="weui-cell" style="padding: 0px 15px;">
+            <div class="weui-cell__hd"><label class="weui-label">预约时间段</label></div>
+            <div class="weui-cell__bd">
+                <div class="weui-cells weui-cells_checkbox">
+                    <label class="weui-cell weui-check__label" for="checkbox_am">
+                        <div class="weui-cell__hd">
+                            <input type="checkbox" class="weui-check" name="checkbox_apm" id="checkbox_am" onclick="check(this)" th:value="20">
+                            <i class="weui-icon-checked" id="checkbox_am_icon"></i>
+                        </div>
+                        <div class="weui-cell__bd">
+                            <p id="checkbox_am_p">上午(08:00-10:30)</p>
+                        </div>
+                    </label>
+                    <label class="weui-cell weui-check__label" for="checkbox_pm">
+                        <div class="weui-cell__hd">
+                            <input type="checkbox" class="weui-check" name="checkbox_apm" id="checkbox_pm" onclick="check(this)" th:value="30">
+                            <i class="weui-icon-checked" id="checkbox_pm_icon"></i>
+                        </div>
+                        <div class="weui-cell__bd">
+                            <p id="checkbox_pm_p">下午(13:00-15:30)</p>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="inline-calendar"></div>
+
+    <p class="weui-btn-area">
+        <a href="javascript:appointment_driver();" class="weui-btn" style=" background:#70d9f4;">预约</a>
+    </p>
+
+    <script th:src="@{/jquery-weui/lib/jquery-2.1.4.js}"></script>
+    <script th:src="@{/jquery-weui/lib/fastclick.js}"></script>
+    <script th:src="@{/jquery-weui/js/jquery-weui.js}"></script>
+    <script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+    <script src="https://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+
+    <script type="text/javascript" th:inline="javascript">
+
+        var ctxPath = [[@{/}]];
+
+        var wx_openid = $('#wx_openid').val();
+
+        $(function() {
+            FastClick.attach(document.body);
+            changeCalendar();
+        });
+
+        function check(obj){
+            if(obj.id == 'checkbox_am' && obj.checked == true){
+                $('#checkbox_pm').prop("checked",false);
+            }
+            else if(obj.id == 'checkbox_pm' && obj.checked == true){
+                $('#checkbox_am').prop("checked",false);
+            }
+        }
+
+        $("#app_date").calendar({
+            container: "#inline-calendar",
+            dateFormat: 'yyyy-mm-dd',
+            minDate: '[[${app_config_vo.minDate}]]',
+            maxDate: '[[${app_config_vo.maxDate}]]',
+            onChange: function (p, values, displayValues) {
+                console.log(p);
+                console.log(values);
+                checkAmPm(values[0]);
+            }
+        });
+
+        function checkAmPm(date_str){
+            var data = {
+                date_str : date_str
+            };
+
+            $.post(ctxPath + 'wechat/getAmPmCheckBox.do',data,function (res) {
+                if(res.full_status==20){
+                    $('#checkbox_am').attr('disabled',true);
+                    $('#checkbox_am_icon').hide();
+                    $('#checkbox_am_p').text('上午(满)').css('color','red');
+                    $('#checkbox_pm').attr('disabled',false);
+                    $('#checkbox_pm_icon').show();
+                    $('#checkbox_pm_p').text('下午(13:00-15:30)').attr('style','');
+                    $('#checkbox_pm').prop("checked",false);
+                    $('#checkbox_am').prop("checked",false);
+                }
+                if(res.full_status==30){
+                    $('#checkbox_pm').attr('disabled',true);
+                    $('#checkbox_pm_icon').hide();
+                    $('#checkbox_pm_p').text('下午(满)').css('color','red');
+                    $('#checkbox_am').attr('disabled',false);
+                    $('#checkbox_am_icon').show();
+                    $('#checkbox_am_p').text('上午(08:00-10:30)').attr('style','');
+                    $('#checkbox_pm').prop("checked",false);
+                    $('#checkbox_am').prop("checked",false);
+                }
+                if(res.full_status==0){
+                    $('#checkbox_am').attr('disabled',false);
+                    $('#checkbox_pm').attr('disabled',false);
+                    $('#checkbox_am_icon').show();
+                    $('#checkbox_pm_icon').show();
+                    $('#checkbox_am_p').text('上午(08:00-10:30)').attr('style','');
+                    $('#checkbox_pm_p').text('下午(13:00-15:30)').attr('style','');
+                    $('#checkbox_pm').prop("checked",false);
+                    $('#checkbox_am').prop("checked",false);
+                }
+                var w1 = getMyDay(new Date(date_str));
+                if(w1==6){
+                    $('#checkbox_pm').attr('disabled',true);
+                    $('#checkbox_pm_icon').hide();
+                    $('#checkbox_pm_p').text('下午(休)').css('color','red');
+                }
+            })
+        }
+
+        function getMyDay(date){
+            var week;
+            if(date.getDay()==0) week=7
+            if(date.getDay()==1) week=1
+            if(date.getDay()==2) week=2
+            if(date.getDay()==3) week=3
+            if(date.getDay()==4) week=4
+            if(date.getDay()==5) week=5
+            if(date.getDay()==6) week=6
+            return week;
+        }
+
+        function changeCalendar(){
+            //去除周日
+            $(".picker-calendar-row").each(function(){
+                $(this).children('div').eq(6).addClass("picker-calendar-day-disabled");
+            });
+
+            var holidays = [[${holidays_arr}]];
+            if(holidays!=null){
+                for(var i=0;i<holidays.length;i++){
+                    var day = holidays[i];
+                    $("[data-date='"+day+"']").addClass("picker-calendar-day-disabled");
+                    $("[data-date='"+day+"']").children().text("休").css("color","red");
+                }
+            }
+
+            var workdays = [[${workdays_arr}]];
+            if(workdays!=null){
+                for(var i=0;i<workdays.length;i++){
+                    var day = workdays[i];
+                    $("[data-date='"+day+"']").removeClass("picker-calendar-day-disabled");
+                }
+            }
+
+            var fulldays = [[${fulldays_arr}]];
+            if(fulldays!=null){
+                for(var i=0;i<fulldays.length;i++){
+                    var day = fulldays[i];
+                    $("[data-date='"+day+"']").addClass("picker-calendar-day-disabled");
+                    $("[data-date='"+day+"']").children().text("满").css("color","red");
+                }
+            }
+        }
+
+        function appointment_driver(){
+            var app_date = $("#app_date").val();
+            var name = $("#name").val();
+            var id_card = $('#id_card').val();
+
+            var now_date = getNowFormatDate();
+            if(app_date==now_date){
+                $.toptip('无法预约当日体检!', 'error');
+                return;
+            }
+
+            var app_apm_arr = $("input[name='checkbox_apm']");
+            var app_apm;
+            for(var i=0;i<app_apm_arr.length;i++){
+                if(app_apm_arr[i].checked){
+                    app_apm = app_apm_arr[i].value;
+                }
+            }
+
+            if(name == ""){
+                $.toptip('预约人姓名不能为空!', 'error');
+                return;
+            }else if(id_card == ""){
+                $.toptip('身份证号码不能为空!', 'error');
+                return;
+            }else if(checkIdentity(id_card)==false){
+                $.toptip('身份证号码格式不正确!', 'error');
+                return;
+            }else if(app_apm == undefined){
+                $.toptip('请选择预约时间段!', 'error');
+                return;
+            }
+
+            var confirm_text;
+            if(app_apm==20){
+                confirm_text = '您确定要预约'+app_date+'<br/>上午(08:00-10:30)的驾驶员体检吗？'+'<br/><font style="color:red">(请确保填写的身份证号码真实有效！)</font>';
+            }
+            if(app_apm==30){
+                confirm_text = '您确定要预约'+app_date+'<br/>下午(13:00-15:30)的驾驶员体检吗？'+'<br/><font style="color:red">(请确保填写的身份证号码真实有效！)</font>';
+            }
+
+            $.confirm({
+                title: '确认预约？',
+                text: confirm_text,
+                onOK: function () {
+
+                    var appCommitVO = {
+                        app_item_id : 2,
+                        wx_openid : wx_openid,
+                        app_date : app_date,
+                        name : name,
+                        id_card : id_card,
+                        app_apm: app_apm
+                    }
+
+                    $.post(ctxPath + 'wechat/app_driver.do',appCommitVO,function(res){
+                        console.log(res);
+                        if(res.resultCode==1000){
+                            window.location.href = ctxPath + 'wechat/app_success.do?wx_openid='+ wx_openid;
+                        }
+                        if(res.resultCode==1010){
+                            $.toptip('当前日期全天预约已满!', 'error');
+                            return;
+                        }
+                        if(res.resultCode==1020){
+                            $.toptip('当前日期上午预约已满!', 'error');
+                            return;
+                        }
+                        if(res.resultCode==1030){
+                            $.toptip('当前日期下午预约已满!', 'error');
+                            return;
+                        }
+                    });
+                },
+                onCancel: function () {
+
+                }
+            });
+        }
+
+        function checkIdentity(identity){
+            var reg = /^[1-9]{1}[0-9]{14}$|^[1-9]{1}[0-9]{16}([0-9]|[xX])$/;
+            if(reg.test(identity)){
+                return true;
+            }else{
+                return false;
+            }
+        }
+
+        function getNowFormatDate(){
+            var date = new Date();
+            var seperator1 = "-";
+            var month = date.getMonth() + 1;
+            var strDate = date.getDate();
+            if (month >= 1 && month <= 9) {
+                month = "0" + month;
+            }
+            if (strDate >= 0 && strDate <= 9) {
+                strDate = "0" + strDate;
+            }
+            var currentdate = date.getFullYear() + seperator1 + month + seperator1 + strDate;
+            return currentdate;
+        }
+    </script>
+</body>
+</html>

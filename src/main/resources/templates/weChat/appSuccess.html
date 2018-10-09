@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>预约成功</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="description" content="Write an awesome description for your new site here.
+    You can edit this line in _config.yml. It will appear in your document head meta (for Google search results)
+    and in your feed.xml site description.
+    ">
+    <link rel="stylesheet" th:href="@{/jquery-weui/lib/weui.min.css}">
+    <link rel="stylesheet" th:href="@{/jquery-weui/css/jquery-weui.css}">
+    <link rel="stylesheet" th:href="@{/jquery-weui/demos/css/demos.css}">
+</head>
+<body ontouchstart>
+
+
+<div class="weui-msg">
+    <div class="weui-msg__icon-area"><i class="weui-icon-success weui-icon_msg"></i></div>
+    <div class="weui-msg__text-area">
+        <h2 class="weui-msg__title">预约成功</h2>
+        <p class="weui-msg__desc">驾驶员体检预约成功</p>
+    </div>
+    <div class="weui-msg__opr-area">
+        <p class="weui-btn-area">
+            <a href="javascript:closeWindow();" class="weui-btn weui-btn_primary">确定</a>
+        </p>
+    </div>
+    <div class="weui-msg__extra-area">
+        <div class="weui-footer">
+            <p class="weui-footer__text">Copyright © 2018-2019 松江区第五康复医院</p>
+        </div>
+    </div>
+</div>
+
+    <script th:src="@{/jquery-weui/lib/jquery-2.1.4.js}"></script>
+    <script th:src="@{/jquery-weui/lib/fastclick.js}"></script>
+    <script th:src="@{/jquery-weui/js/jquery-weui.js}"></script>
+    <script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+    <script src="https://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+    <script type="text/javascript" th:inline="javascript">
+        $(function() {
+            FastClick.attach(document.body);
+        });
+
+        wx.config({
+            debug: false,
+            appId: [[${wxconfig.appId}]],
+            timestamp: [[${wxconfig.timestamp}]],
+            nonceStr: [[${wxconfig.nonceStr}]],
+            signature: [[${wxconfig.signature}]],
+            jsApiList: ['closeWindow']
+        });
+
+        function closeWindow(){
+            wx.closeWindow();
+        }
+    </script>
+</body>
+</html>

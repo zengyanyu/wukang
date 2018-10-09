@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>我的预约</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="description" content="Write an awesome description for your new site here.
+    You can edit this line in _config.yml. It will appear in your document head meta (for Google search results)
+    and in your feed.xml site description.
+    ">
+    <link rel="stylesheet" th:href="@{/jquery-weui/lib/weui.min.css}">
+    <link rel="stylesheet" th:href="@{/jquery-weui/css/jquery-weui.css}">
+    <link rel="stylesheet" th:href="@{/jquery-weui/demos/css/demos.css}">
+</head>
+<body ontouchstart>
+
+<div class="weui-panel weui-panel_access">
+    <div class="weui-panel__hd">我的预约列表</div>
+    <div class="weui-panel__bd">
+        <a href="javascript:void(0);" class="weui-media-box weui-media-box_appmsg" th:each="app,iterStat : ${myApps}">
+            <div class="weui-media-box__hd">
+                <img class="weui-media-box__thumb" th:src="@{/images/app-tj02.png}">
+            </div>
+            <div class="weui-media-box__bd">
+                <h4 class="weui-media-box__title">[[${app.app_time}]]</h4>
+                <p class="weui-media-box__desc">请携带身份证按时前来体检</p>
+            </div>
+        </a>
+    </div>
+</div>
+
+<script th:src="@{/jquery-weui/lib/jquery-2.1.4.js}"></script>
+<script th:src="@{/jquery-weui/lib/fastclick.js}"></script>
+<script th:src="@{/jquery-weui/js/jquery-weui.js}"></script>
+</body>
+</html>
