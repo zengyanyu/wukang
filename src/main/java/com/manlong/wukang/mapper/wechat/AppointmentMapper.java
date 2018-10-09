@@ -34,6 +34,6 @@ public interface AppointmentMapper {
 
     @Select("SELECT * FROM appointment " +
             "WHERE app_item = #{item_id} AND status = 0 " +
-            "AND app_date >= #{current_date}")
-    List<Appointment> getAppointmentsByApp_itemAndCurrentDate(@Param("item_id") Integer item_id,@Param("current_date") String current_date);
+            "AND app_date >= #{current_date} AND wx_openid = #{wx_openid}")
+    List<Appointment> getAppointmentsByApp_itemAndCurrentDate(@Param("item_id") Integer item_id,@Param("current_date") String current_date,@Param("wx_openid") String wx_openid);
 }

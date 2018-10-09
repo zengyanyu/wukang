@@ -41,6 +41,7 @@ public class AppointmentController {
         SimpleDateFormat dateFormat2 = new SimpleDateFormat("yyyyMMdd");
         String currentDate = dateFormat.format(new Date());
 
+        System.out.println("当前日期为："+currentDate);
         Appointment hasAppointment = appointmentMapper.getAppointmentByApp_dateAndId_card(currentDate, id_card);
 
         if(hasAppointment!=null && hasAppointment.getLocal_number()!=""){

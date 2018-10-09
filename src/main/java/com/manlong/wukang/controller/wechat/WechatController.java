@@ -74,7 +74,7 @@ public class WechatController {
             url = "weChat/healthAppRemind";
         }
         if(item_id==2){
-            List<Appointment> apps = appointmentMapper.getAppointmentsByApp_itemAndCurrentDate(item_id,currentDate);
+            List<Appointment> apps = appointmentMapper.getAppointmentsByApp_itemAndCurrentDate(item_id,currentDate,wx_openid);
             if(apps==null || apps.size()<=0){
                 url = "weChat/driverAppRemind";
             }else{
