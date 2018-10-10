@@ -41,7 +41,7 @@ public class AppointmentController {
         SimpleDateFormat dateFormat2 = new SimpleDateFormat("yyyyMMdd");
         String currentDate = dateFormat.format(new Date());
 
-        System.out.println("当前日期为："+currentDate);
+        // System.out.println("当前日期为："+currentDate);
         Appointment hasAppointment = appointmentMapper.getAppointmentByApp_dateAndId_card(currentDate, id_card);
 
         if(hasAppointment!=null && hasAppointment.getLocal_number()!=""){
@@ -76,6 +76,8 @@ public class AppointmentController {
         appointment.setName(name);
         appointment.setId_card(id_card);
         appointment.setApp_date(new Date());
+
+        // System.out.println("当前小时为："+hour);
 
         App_item app_item = app_itemMapper.getApp_itemById(2);
         Integer app_max_count = app_item.getTotal_max_count();
