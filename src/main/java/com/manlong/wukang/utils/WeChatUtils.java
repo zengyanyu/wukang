@@ -276,7 +276,7 @@ public class WeChatUtils {
     }
 
     public void excuteWechatTask(Wx_configMapper wx_configMapper){
-        System.out.println("开始执行wechat任务");
+        // System.out.println("开始执行wechat任务");
 
         Token token = WeChatUtils.getToken(BaseData.WECHAT_APPID, BaseData.WECHAT_APPSECRET);
 
